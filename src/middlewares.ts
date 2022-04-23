@@ -3,6 +3,7 @@ import status from "http-status";
 import expressWinston from "express-winston";
 import winston from "winston";
 import * as Transport from "winston-transport";
+import { z, ZodError } from "zod";
 
 export const addLogger = (app: Express) => {
   const loggerTransports: Transport[] = [
@@ -13,10 +14,6 @@ export const addLogger = (app: Express) => {
     }),
     new winston.transports.File({ dirname: "logs", filename: "combined.log" }),
   ];
-
-  if (process.env.NODE_ENV !== "production") {
-    loggerTransports.push(new winston.transports.Console());
-  }
 
   app.use(
     expressWinston.logger({
@@ -48,10 +45,17 @@ export const errorHandler: ErrorRequestHandler = (
     res.status(status.INTERNAL_SERVER_ERROR);
   }
 
+  let message = err.message;
+
+  if (err.name === "ZodError") {
+    const zodError = err as ZodError;
+    message = zodError.issues.map((issue) => issue.message).join(",");
+  }
+
   return res.json({
     ok: false,
     error: {
-      message: err.message,
+      message,
       stack: process.env.NODE_ENV !== "production" ? err.stack : {},
     },
   });
