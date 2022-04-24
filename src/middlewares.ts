@@ -56,7 +56,7 @@ export const errorHandler: ErrorRequestHandler = (
     ok: false,
     error: {
       message,
-      stack: process.env.NODE_ENV !== "production" ? err.stack : {},
+      // stack: process.env.NODE_ENV !== "production" ? err.stack : {},
     },
   });
 };

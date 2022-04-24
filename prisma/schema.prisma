@@ -22,3 +22,11 @@ model UserProfile {
   user   User   @relation(fields: [userId], references: [id])
   userId String @unique @db.ObjectId
 }
+
+model Product {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  price       Float
+  image       String @default("http://dummy-images.com/business/dummy-480x270-Bag.jpg")
+}
